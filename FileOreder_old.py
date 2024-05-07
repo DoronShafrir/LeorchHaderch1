@@ -5,7 +5,7 @@ import openpyxl
 
 
 
-class Order:
+class Order1:
     def __init__(self):
         self.gen = pd.read_csv("General2023.csv", parse_dates=[0], dayfirst=True,  encoding='iso-8859-8')
         self.gen['תאריך'] = self.gen['תאריך'].dt.date
@@ -23,56 +23,62 @@ class Order:
         self.Nov = pd.DataFrame()
         self.Dec = pd.DataFrame()
 
-        self.months = {
-            1 : 'Jan.xlsx',
-            2 : 'Feb.xlsx',
-            3 : 'Mar.xlsx',
-            4 : 'Apr.xlsx',
-            5 : 'May.xlsx',
-            6 : 'Jun.xlsx',
-            7 : 'Jul.xlsx',
-            8 : 'Aug.xlsx',
-            9 : 'Sep.xlsx',
-            10 :'Oct.xlsx',
-            11 :'Nov.xlsx',
-            12 :'Dec.xlsx'
-        }
+        self.months = [self.Jan, self.Feb, self.Mar, self.Apr, self.May, self.Jun, self.Jul, self.Aug, self.Sep, self.Oct, self.Nov, self.Dec ]
+
+
+    # def seperate_lines(self):
+    #     for i, line in self.gen.iterrows():
+    #         month_number = line['תאריך'].month
+    #         line = pd.DataFrame(line, index=self.gen.columns)
+    #         self.months[month_number - 1] = pd.concat([self.months[month_number - 1], line], axis=1)
+    #         print(self.months[month_number].info)
+
+            # self.add_line(r, month_number )
 
     def seperate_lines(self):
-        for i, r in self.gen.iterrows():
-            month_number = r['תאריך'].month
-            r = pd.DataFrame(r, index=self.gen.columns)
+        temp_month = pd.DataFrame()
+        for i, line in self.gen.iterrows():
+            month_number = line['תאריך'].month
+            if self.months[month_number - 1] is None:
+                self.months[month_number - 1] = pd.DataFrame(columns=self.gen.columns)
+            self.months[month_number - 1] = pd.concat([self.months[month_number - 1], pd.DataFrame(line).T], ignore_index=True, axis = 1)
+            # temp_month = self.months[month_number - 1]
+            # temp_month = pd.concat([temp_month, pd.DataFrame(line)], ignore_index=True, axis=1)
+            # self.months[1] = pd.concat([self.months[1], temp_month], ignore_index=True, axis = 0)
 
-            self.add_line(r, month_number )
 
-
+    # def add_line(self, line, month):
+    #
+    #     if month == 1:
+    #         self.Jan = pd.concat([self.Jan, line],axis = 1)
+    #     elif month == 2:
+    #         self.Feb = pd.concat([self.Feb, line],axis = 1)
+    #     elif month == 3:
+    #         self.Mar = pd.concat([self.Mar, line],axis = 1)
+    #     elif month == 4:
+    #         self.Apr = pd.concat([self.Apr, line],axis = 1)
+    #     elif month == 5:
+    #         self.May = pd.concat([self.May, line],axis = 1)
+    #     elif month == 6:
+    #         self.Jun = pd.concat([self.Jun, line],axis = 1)
+    #     elif month == 7:
+    #         self.Jul = pd.concat([self.Jul, line],axis = 1)
+    #     elif month == 8:
+    #         self.Aug = pd.concat([self.Aug, line],axis = 1)
+    #     elif month == 9:
+    #         self.Sep = pd.concat([self.Sep, line],axis = 1)
+    #     elif month == 10:
+    #         self.Oct = pd.concat([self.Oct, line],axis = 1)
+    #     elif month == 11:
+    #         self.Nov = pd.concat([self.Nov, line],axis = 1)
+    #     elif month == 12:
+    #         self.Dec = pd.concat([self.Dec, line],axis = 1)
 
     def add_line(self, line, month):
+        for i in range(12):
+            if month == i:
+                self.months[i-1] = pd.concat([self.months[i-1], line],axis = 1)
 
-        if month == 1:
-            self.Jan = pd.concat([self.Jan, line],axis = 1)
-        elif month == 2:
-            self.Feb = pd.concat([self.Feb, line],axis = 1)
-        elif month == 3:
-            self.Mar = pd.concat([self.Mar, line],axis = 1)
-        elif month == 4:
-            self.Apr = pd.concat([self.Apr, line],axis = 1)
-        elif month == 5:
-            self.May = pd.concat([self.May, line],axis = 1)
-        elif month == 6:
-            self.Jun = pd.concat([self.Jun, line],axis = 1)
-        elif month == 7:
-            self.Jul = pd.concat([self.Jul, line],axis = 1)
-        elif month == 8:
-            self.Aug = pd.concat([self.Aug, line],axis = 1)
-        elif month == 9:
-            self.Sep = pd.concat([self.Sep, line],axis = 1)
-        elif month == 10:
-            self.Oct = pd.concat([self.Oct, line],axis = 1)
-        elif month == 11:
-            self.Nov = pd.concat([self.Nov, line],axis = 1)
-        elif month == 12:
-            self.Dec = pd.concat([self.Dec, line],axis = 1)
     def create_file(self):
         self.Jan = self.Jan.transpose()
         # self.Jan.to_csv("Jan.csv", encoding='iso-8859-8', index=False)
